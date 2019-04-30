@@ -1,0 +1,2 @@
+# ARig
+maya auto rig
