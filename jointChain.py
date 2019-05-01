@@ -23,7 +23,7 @@ class jntChain():
 
 	def build(self, pos=[(0,0,0)]):
 		# create joints from pos list
-		for p in pos:
+		for p in reversed(pos):
 			# clear selection to create joints in root
 			mc.select(cl=1)
 
