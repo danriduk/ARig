@@ -32,6 +32,7 @@ class fkChain(jointChain.jntChain):
 
 		# global members
 		self.cons = []
+		self.consClass = []
 
 	def build(self):
 		# call parent class build method
@@ -44,7 +45,6 @@ class fkChain(jointChain.jntChain):
 		if len(self.jnts) < 1:
 			return
 
-		conGrps = []
 		for jnt in self.jnts:
 			fkCon = controls.Control(
 						prefix=self.prefix,
@@ -55,12 +55,18 @@ class fkChain(jointChain.jntChain):
 						rotateTo=jnt,
 						color=self.color
 						)
+			fkCon.transformControlShape(fkCon.con, ro=(0,0,90))
 
-			conGrps.append(fkCon.grps[0])
 			self.cons.append(fkCon.con)
+			self.consClass.append(fkCon)
 
 			# constrain joint too control
 			mc.parentConstraint(fkCon.con, jnt)
 
 	def _fkParenting(self):
-		pass
+		# fk parenting
+		for i in reversed(range(len(self.consClass))):
+			print i
+			# check if not last control in list
+			if i != (len(self.consClass)-1):
+				mc.parent(self.consClass[i+1].grps[0], self.consClass[i].con)
