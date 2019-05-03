@@ -16,19 +16,20 @@ class fkChain(jointChain.jntChain):
 		posList=[(0,0,0)]
 		):
 
-		# init parent class
-		jointChain.jntChain.__init__(self,
-								prefix=prefix,
-								name=name,
-								suffix='jnt'
-								)
-
 		self.prefix = prefix
-		self.name = name
+		self.name = '{0}FK'.format(name)
 		self.shape = shape
 		self.color = color
-
 		self.posList = posList
+
+		# init parent class
+		jointChain.jntChain.__init__(
+								self,
+								prefix=self.prefix,
+								name=self.name,
+								suffix='jnt',
+								posList=self.posList
+								)
 
 		# global members
 		self.cons = []
@@ -36,10 +37,11 @@ class fkChain(jointChain.jntChain):
 
 	def build(self):
 		# call parent class build method
-		jointChain.jntChain.build(self, pos=self.posList)
+		jointChain.jntChain.build(self)
 
 		# build
 		self._addControls()
+		self._fkParenting()
 
 	def _addControls(self):
 		if len(self.jnts) < 1:
@@ -55,6 +57,7 @@ class fkChain(jointChain.jntChain):
 						rotateTo=jnt,
 						color=self.color
 						)
+
 			fkCon.transformControlShape(fkCon.con, ro=(0,0,90))
 
 			self.cons.append(fkCon.con)
@@ -66,7 +69,6 @@ class fkChain(jointChain.jntChain):
 	def _fkParenting(self):
 		# fk parenting
 		for i in reversed(range(len(self.consClass))):
-			print i
 			# check if not last control in list
 			if i != (len(self.consClass)-1):
 				mc.parent(self.consClass[i+1].grps[0], self.consClass[i].con)
